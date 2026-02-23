@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+    <meta name="apple-mobile-web-app-title" content="Birthday">
+    <title>Birthday</title>
+
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- iOS Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-180.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/icons/icon-152.png">
+
+    <!-- iPhone SE, 8 -->
+    <link rel="apple-touch-startup-image" href="splash/splash-750x1334.png" 
+      media="(device-width: 375px) and (device-height: 667px)">
+
+    <!-- iPhone 12, 13, 14 -->
+    <link rel="apple-touch-startup-image" href="splash/splash-1170x2532.png" 
+      media="(device-width: 390px) and (device-height: 844px)">
+
+    <!-- iPhone 14 Pro, 15, 15 Pro -->
+    <link rel="apple-touch-startup-image" href="splash/splash-1290x2796.png" 
+      media="(device-width: 393px) and (device-height: 852px)">      
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/icons/favicon.png" sizes="32x32">
+    
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>        
+    <script src="https://cdn.tailwindcss.com "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300 ;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+</head>
+
+<body class="safe-bottom safe-x theme-transition">
+
+    <!-- Pull to Refresh Indicator -->
+    <div class="ptr-indicator" id="ptrIndicator">
+        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+    </div>
+
+    <!-- Header -->
+    <header class="glass-header fixed top-0 left-0 right-0 z-50 safe-top pt-3 pb-4 px-5 theme-transition">
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-3">
+
+                <h1 class="text-display">Birthday</h1>
+            </div>
+            
+            <div class="flex items-center gap-2">
+
+               <!-- Statistics and Export -->
+                <button onclick="showStats()" class="p-2 -ml-2 rounded-full active:scale-90 transition">
+                    <svg class="w-6 h-6" style="color: var(--text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </button>                  
+
+                <!-- Refresh Button (nuevo) -->
+                <button onclick="refreshData()" class="p-2 -mr-1 rounded-full active:scale-90 transition" id="refreshBtn">
+                    <svg class="w-6 h-6" style="color: var(--text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                </button>
+
+                <!-- Dark Mode Toggle -->
+                <button onclick="toggleDarkMode()" class="p-2 -mr-1 rounded-full active:scale-90 transition" id="darkModeBtn">
+                    <svg class="w-6 h-6" style="color: var(--text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" id="moonIcon"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" id="sunIcon" class="hidden"/>
+                    </svg>
+                </button>              
+
+            </div>
+        </div>
+
+        <!-- Search -->
+        <div class="glass-card rounded-2xl px-4 py-3 flex items-center gap-3 theme-transition">
+            <svg class="w-5 h-5" style="color: var(--text-tertiary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input type="text" id="searchInput" placeholder="Buscar contactos..." 
+                   class="bg-transparent border-none outline-none text-body flex-1 placeholder-gray-400 theme-transition"
+                   style="color: var(--text-primary);"
+                   oninput="searchBirthdays()">
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-40 pb-28 relative" id="mainContent">
+        
+        <!-- Today Card -->
+        <div id="todaySection" class="hidden mb-6">
+            <div class="today-card relative theme-transition">
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-3xl">🎉</span>
+                        <span class="badge-ios">HOY</span>
+                    </div>
+                    <h2 id="todayNames" class="text-title-1 mb-1" style="color: var(--text-primary);"></h2>
+                    <p class="text-footnote">¡No olvides felicitarles!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Segmented Control -->
+        <div class="segment-ios mb-6 theme-transition">
+            <button onclick="filterBirthdays('all')" class="segment-btn active" data-filter="all">Todos</button>
+            <button onclick="filterBirthdays('family')" class="segment-btn" data-filter="family">Familia</button>
+            <button onclick="filterBirthdays('friends')" class="segment-btn" data-filter="friends">Amigos</button>
+            <button onclick="filterBirthdays('upcoming')" class="segment-btn" data-filter="upcoming">Pronto</button>
+        </div>
+
+        <!-- List -->
+        <div id="birthdaysList" class="space-y-3">
+            <!-- Items generated here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-16">
+            <div class="w-28 h-28 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center text-5xl shadow-sm theme-transition">
+                🎂
+            </div>
+            <h2 class="text-title-2 mb-2" style="color: var(--text-primary);">Sin cumpleaños</h2>
+            <p class="text-footnote mb-8 max-w-xs mx-auto">Añade tus contactos para recordar sus fechas especiales</p>
+            <button onclick="importContacts()" class="btn-ios">
+                Importar Contactos
+            </button>
+        </div>
+    </main>
+
+    <!-- FAB -->
+    <button onclick="showAddModal()" class="fab-ios md:hidden fixed bottom-6 right-6 w-14 h-14 btn-primary rounded-full flex items-center justify-center shadow-lg shadow-indigo-500/40 z-40 touch-feedback">
+        +
+    </button>
+
+    <!-- Add/Edit Sheet -->
+    <div id="personModal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-end">
+        <div class="sheet-ios w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+            <div class="flex justify-center pt-3 pb-6" onclick="closeModal()">
+                <div class="w-10 h-1.5 bg-gray-300 rounded-full"></div>
+            </div>
+
+            <div class="px-6 pb-4 flex items-center justify-between">
+                <button onclick="closeModal()" class="text-title-3" style="color: var(--text-secondary);">Cancelar</button>
+                <h2 id="modalTitle" class="text-title-2" style="color: var(--text-primary);">Nuevo</h2>
+                <button onclick="savePerson()" class="text-title-3 text-blue-500 font-semibold">Guardar</button>
+            </div>
+
+            <div class="px-6 pb-8 space-y-6">
+                <div class="flex justify-center mb-6">
+                    <div id="avatarPreview" class="avatar-ios w-20 h-20 text-3xl bg-gradient-to-br from-blue-100 to-purple-100 text-blue-600 theme-transition">
+                        ?
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-caption mb-2 block">Nombre</label>
+                        <input type="text" id="personName" class="input-ios theme-transition" placeholder="Nombre completo" oninput="updateAvatarPreview()">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-caption mb-2 block">Fecha</label>
+                            <input type="date" id="birthDate" class="input-ios theme-transition">
+                        </div>
+                        <div>
+                            <label class="text-caption mb-2 block">Tipo</label>
+                            <select id="category" class="input-ios theme-transition appearance-none">
+                                <option value="family">👨‍👩‍👧‍👦 Familia</option>
+                                <option value="friends">👯 Amigos</option>
+                                <option value="work">💼 Trabajo</option>
+                                <option value="other">✨ Otros</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-caption mb-2 block">Notas</label>
+                        <textarea id="notes" rows="4" class="input-ios resize-none theme-transition" placeholder="Ideas de regalo..."></textarea>
+                    </div>
+                </div>
+
+                <button onclick="deleteCurrentPerson()" id="deleteBtn" class="w-full py-4 rounded-2xl bg-red-500/10 text-red-500 font-semibold hidden active:scale-95 transition">
+                    Eliminar Cumpleaños
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Sheet -->
+    <div id="importModal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-end">
+        <div class="sheet-ios w-full max-h-[85vh]">
+            <div class="flex justify-center pt-3 pb-4">
+                <div class="w-10 h-1.5 bg-gray-300 rounded-full"></div>
+            </div>
+
+            <div class="px-6 pb-4 flex items-center justify-between border-b" style="border-color: var(--separator);">
+                <button onclick="closeImportModal()" class="text-title-3" style="color: var(--text-secondary);">Cerrar</button>
+                <h2 class="text-title-2" style="color: var(--text-primary);">Importar</h2>
+                <button onclick="importSelected()" id="importBtn" class="text-title-3 text-blue-500 font-semibold opacity-50" disabled>
+                    Importar
+                </button>
+            </div>
+
+            <div class="segment-ios mx-6 my-4 theme-transition">
+                <button onclick="switchTab('device')" id="tab-device" class="segment-btn active flex-1">Contactos</button>
+                <button onclick="switchTab('manual')" id="tab-manual" class="segment-btn flex-1">Manual</button>
+            </div>
+
+            <div class="px-6 pb-8 overflow-y-auto max-h-[55vh]">
+                <div id="import-device" class="space-y-3">
+                    <div id="contactsList" class="space-y-3">
+                        <div class="text-center py-12 text-footnote">Cargando...</div>
+                    </div>
+                </div>
+
+                <div id="import-manual" class="hidden">
+                    <textarea id="manualImport" rows="6" class="input-ios w-full theme-transition" placeholder="Nombre, DD/MM/AAAA"></textarea>
+                    <p class="text-footnote mt-3 px-1">Formatos: DD/MM/AAAA, DD-MM-YYYY o YYYY-MM-DD</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div id="statsModal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-6">
+        <div class="glass-card w-full max-w-sm p-6 relative theme-transition">
+            <button onclick="closeStats()" class="absolute top-4 right-4 p-2 rounded-full active:scale-90 transition" style="background: var(--bg-tertiary);">
+                <svg class="w-5 h-5" style="color: var(--text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+
+            <h2 class="text-title-1 mb-6" style="color: var(--text-primary);">Estadísticas</h2>
+
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="glass-card p-4 text-center theme-transition">
+                    <div class="text-title-1 text-blue-500 mb-1" id="statTotal">0</div>
+                    <div class="text-footnote">Contactos</div>
+                </div>
+                <div class="glass-card p-4 text-center theme-transition">
+                    <div class="text-title-1 text-pink-500 mb-1" id="statThisMonth">0</div>
+                    <div class="text-footnote">Este mes</div>
+                </div>
+                <div class="glass-card p-4 text-center theme-transition">
+                    <div class="text-title-1 text-purple-500 mb-1" id="statAvgAge">0</div>
+                    <div class="text-footnote">Edad media</div>
+                </div>
+                <div class="glass-card p-4 text-center theme-transition">
+                    <div class="text-title-1 text-orange-500 mb-1" id="statNext">-</div>
+                    <div class="text-footnote">Próximo</div>
+                </div>
+            </div>
+
+            <button onclick="exportToPDF()" class="w-full py-4 rounded-2xl btn-ios btn-ios-secondary font-semibold flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+                Exportar a PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toastContainer" class="fixed top-24 left-1/2 transform -translate-x-1/2 z-50"></div>
+
+<!-- ===================
+     Scripts
+     =================== -->
+<script src="app.js"></script> 
+
+<script>
+// Registrar Service Worker
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+            console.log('SW registrado:', registration);
+            
+            // Verificar actualizaciones
+            registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        // Nueva versión disponible
+                        if (confirm('Nueva versión disponible. ¿Actualizar?')) {
+                            newWorker.postMessage({ type: 'SKIP_WAITING' });
+                            window.location.reload();
+                        }
+                    }
+                });
+            });
+        })
+        .catch((error) => {
+            console.log('SW error:', error);
+        });
+}      
+</script>
+
+</body>
+</html>
