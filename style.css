@@ -760,3 +760,327 @@
     font-weight: 500;
     color: var(--text-secondary);
 }
+
+
+/* ==================== TIMELINE STYLES ==================== */
+
+.timeline-sheet {
+    background: var(--bg-primary);
+    border-radius: 24px 24px 0 0;
+    max-height: 90vh;
+    overflow: hidden;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.timeline-sheet.show {
+    transform: translateY(0);
+}
+
+@media (min-width: 640px) {
+    .timeline-sheet {
+        border-radius: 24px;
+        transform: scale(0.9) translateY(20px);
+        opacity: 0;
+    }
+
+    .timeline-sheet.show {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.timeline-content {
+    scroll-behavior: smooth;
+}
+
+.timeline-month {
+    margin-bottom: 24px;
+}
+
+.timeline-month.current-month {
+    position: relative;
+}
+
+.timeline-month-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--separator);
+}
+
+.month-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-transform: capitalize;
+}
+
+.current-badge {
+    background: linear-gradient(135deg, var(--ios-blue) 0%, var(--ios-purple) 100%);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.month-count {
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.timeline-events {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.timeline-event {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.timeline-event:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px var(--glass-shadow);
+}
+
+.timeline-event:active {
+    transform: scale(0.98);
+}
+
+.timeline-event.today {
+    background: linear-gradient(135deg, rgba(255, 55, 95, 0.1) 0%, rgba(191, 90, 242, 0.1) 100%);
+    border-color: rgba(255, 55, 95, 0.3);
+}
+
+.timeline-event.weekend {
+    border-left: 4px solid var(--ios-orange);
+}
+
+.event-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 48px;
+    padding: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 12px;
+}
+
+.day-number {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.day-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+.event-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.event-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.event-name {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.event-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.today-badge {
+    background: linear-gradient(135deg, #FF375F 0%, #FF453A 100%);
+    color: white;
+}
+
+.weekend-badge {
+    background: linear-gradient(135deg, #FF9F0A 0%, #FFD60A 100%);
+    color: #000;
+}
+
+.event-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.event-details span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.zodiac {
+    color: var(--ios-purple);
+    font-weight: 500;
+}
+
+.age {
+    color: var(--ios-blue);
+    font-weight: 500;
+}
+
+.countdown {
+    color: var(--ios-green);
+    font-weight: 600;
+}
+
+.event-notes {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+.event-actions {
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.timeline-event:hover .event-actions {
+    opacity: 1;
+}
+
+.action-btn-small {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    color: var(--ios-green);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn-small:hover {
+    background: var(--ios-green);
+    color: white;
+    transform: scale(1.1);
+}
+
+.timeline-stats {
+    background: var(--bg-secondary);
+    backdrop-filter: blur(20px);
+}
+
+/* ==================== HEADER BUTTONS ==================== */
+
+.header-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.header-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.header-btn:active {
+    transform: scale(0.9);
+    background: var(--bg-secondary);
+}
+
+.header-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* ==================== SCROLLBAR PARA TIMELINE ==================== */
+
+.timeline-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.timeline-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.timeline-content::-webkit-scrollbar-thumb {
+    background: var(--text-tertiary);
+    border-radius: 3px;
+}
+
+/* ==================== ANIMACIONES ADICIONALES ==================== */
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.timeline-event {
+    animation: slideInRight 0.4s ease forwards;
+}
+
+.timeline-event:nth-child(1) { animation-delay: 0.05s; }
+.timeline-event:nth-child(2) { animation-delay: 0.1s; }
+.timeline-event:nth-child(3) { animation-delay: 0.15s; }
+.timeline-event:nth-child(4) { animation-delay: 0.2s; }
+.timeline-event:nth-child(5) { animation-delay: 0.25s; }
