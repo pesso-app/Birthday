@@ -80,14 +80,6 @@ Exporta todos tus datos como archivo JSON incluyendo:
 | Contact Picker | ✅ | ❌ | ❌ |
 | IndexedDB | ✅ | ✅ | ✅ |
 
-## 🚧 Roadmap
-
-- [ ] Sincronización en la nube
-- [ ] Widget para iOS/Android
-- [ ] Integración con Google Calendar
-- [ ] Sugerencias de regalos con IA
-- [ ] Compartir lista entre usuarios
-
 ## 🤝 Contribuir
 
 1. Fork el repositorio
