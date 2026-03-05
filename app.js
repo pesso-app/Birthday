@@ -1023,6 +1023,31 @@ async function showSettingsModal() {
                             </button>
                         </div>
                     </div>
+
+                    <!-- Color del Tema -->
+                    <div class="glass-card p-4 theme-transition">
+                        <div class="mb-3">
+                            <div class="text-title-3" style="color: var(--text-primary);">Color del tema</div>
+                            <div class="text-footnote" style="color: var(--text-secondary);">Personaliza el color principal</div>
+                        </div>
+                       <div class="grid grid-cols-5 gap-2">
+                            ${Object.entries(THEMES).map(([key, theme]) => `
+                                <button onclick="setTheme('${key}'); updateSettingsTheme('${key}'); showToast('Tema ${theme.name} aplicado');" 
+                                        class="theme-option ${currentTheme === key ? 'active' : ''}" 
+                                        style="background: ${theme.gradient}; height: 44px; border-radius: 12px; border: 2px solid ${currentTheme === key ? 'var(--text-primary)' : 'transparent'}; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
+                                        title="${theme.name}">
+                                </button>
+                            `).join('')}
+                        </div>
+                        <div class="flex justify-between mt-2 text-footnote" style="color: var(--text-secondary);">
+                            <span>Azul</span>
+                            <span>Rosa</span>
+                            <span>Verde</span>
+                            <span>Púrpura</span>
+                            <span>Naranja</span>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div>
@@ -1263,3 +1288,121 @@ window.onclick = (e) => {
         closeTimeline();
     }
 };
+
+
+// ==================== ESTADÍSTICAS ====================
+function showStats() {
+    const modal = document.getElementById('statsModal');
+    if (!modal) return;
+    
+    // Calcular estadísticas
+    const total = people.length;
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    
+    // Cumpleaños este mes
+    const thisMonth = people.filter(p => {
+        const birthDate = new Date(p.birthDate);
+        return birthDate.getMonth() === currentMonth;
+    }).length;
+    
+    // Edad media
+    let avgAge = 0;
+    if (total > 0) {
+        const totalAge = people.reduce((sum, p) => {
+            return sum + calculateAge(new Date(p.birthDate));
+        }, 0);
+        avgAge = Math.round(totalAge / total);
+    }
+    
+    // Próximo cumpleaños
+    let nextPerson = '-';
+    if (people.length > 0) {
+        const sorted = [...people].sort((a, b) => {
+            return getDaysUntil(new Date(a.birthDate)) - getDaysUntil(new Date(b.birthDate));
+        });
+        const days = getDaysUntil(new Date(sorted[0].birthDate));
+        nextPerson = days === 0 ? 'Hoy!' : `${days} días`;
+    }
+    
+    // Actualizar UI
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statThisMonth').textContent = thisMonth;
+    document.getElementById('statAvgAge').textContent = avgAge || '-';
+    document.getElementById('statNext').textContent = nextPerson;
+    
+    modal.classList.remove('hidden');
+}
+
+function closeStats() {
+    const modal = document.getElementById('statsModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    if (!jsPDF) {
+        showToast('Error: Librería PDF no cargada');
+        return;
+    }
+    
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Título
+    doc.setFontSize(24);
+    doc.text('My Birthdays', pageWidth / 2, 20, { align: 'center' });
+    
+    // Fecha
+    doc.setFontSize(12);
+    doc.setTextColor(100);
+    doc.text(`Generado: ${new Date().toLocaleDateString('es-ES')}`, pageWidth / 2, 30, { align: 'center' });
+    
+    let y = 50;
+    
+    // Ordenar por días hasta cumpleaños
+    const sorted = [...people].sort((a, b) => {
+        return getDaysUntil(new Date(a.birthDate)) - getDaysUntil(new Date(b.birthDate));
+    });
+    
+    sorted.forEach((person, index) => {
+        if (y > 270) {
+            doc.addPage();
+            y = 20;
+        }
+        
+        const birthDate = new Date(person.birthDate);
+        const days = getDaysUntil(birthDate);
+        const age = calculateAge(birthDate);
+        const zodiac = getZodiac(birthDate);
+        
+        // Nombre
+        doc.setFontSize(14);
+        doc.setTextColor(0);
+        doc.text(`${index + 1}. ${person.name}`, 20, y);
+        
+        // Detalles
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        const details = `${birthDate.getDate()}/${birthDate.getMonth() + 1} • ${zodiac.symbol} ${zodiac.name} • Cumple ${age + 1} años • ${days === 0 ? '¡HOY!' : `En ${days} días`}`;
+        doc.text(details, 20, y + 6);
+        
+        // Notas si existen
+        if (person.notes) {
+            doc.setFontSize(9);
+            doc.setTextColor(150);
+            doc.text(`Notas: ${person.notes.substring(0, 60)}${person.notes.length > 60 ? '...' : ''}`, 20, y + 12);
+            y += 8;
+        }
+        
+        y += 20;
+    });
+    
+    // Total
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Total: ${people.length} contactos`, pageWidth / 2, y + 10, { align: 'center' });
+    
+    doc.save('cumpleanos.pdf');
+    showToast('PDF descargado');
+}
