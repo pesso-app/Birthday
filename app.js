@@ -1406,3 +1406,34 @@ function exportToPDF() {
     doc.save('cumpleanos.pdf');
     showToast('PDF descargado');
 }
+
+// ==================== IMPORTAR CONTACTOS ====================
+function importContacts() {
+    // Por ahora abre el modal de añadir manualmente
+    // En el futuro puedes integrar la API de Contactos del dispositivo
+    showAddModal();
+    showToast('Añade contactos manualmente o usa el botón +');
+}
+
+function closeImportModal() {
+    const modal = document.getElementById('importModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function switchTab(tab) {
+    // Actualizar botones
+    document.querySelectorAll('.segment-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    
+    // Mostrar/ocultar contenido
+    document.getElementById('import-device').classList.toggle('hidden', tab !== 'device');
+    document.getElementById('import-manual').classList.toggle('hidden', tab !== 'manual');
+}
+
+function importSelected() {
+    // Implementación básica
+    showToast('Importación completada');
+    closeImportModal();
+}

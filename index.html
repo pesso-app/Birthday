@@ -18,15 +18,15 @@
     <link rel="apple-touch-icon" sizes="152x152" href="assets/icons/icon-152.png">
 
     <!-- iPhone SE, 8 -->
-    <link rel="apple-touch-startup-image" href="./assets/splash/splash-750x1334.png" 
+    <link rel="apple-touch-startup-image" href="assets/splash/splash-750x1334.png" 
       media="(device-width: 375px) and (device-height: 667px)">
 
     <!-- iPhone 12, 13, 14 -->
-    <link rel="apple-touch-startup-image" href="./assets/splash/splash-1170x2532.png" 
+    <link rel="apple-touch-startup-image" href="assets/splash/splash-1170x2532.png" 
       media="(device-width: 390px) and (device-height: 844px)">
 
     <!-- iPhone 14 Pro, 15, 15 Pro -->
-    <link rel="apple-touch-startup-image" href="./assets/splash/splash-1290x2796.png" 
+    <link rel="apple-touch-startup-image" href="assets/splash/splash-1290x2796.png" 
       media="(device-width: 393px) and (device-height: 852px)">      
 
     <!-- Favicon -->
@@ -39,58 +39,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300 ;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <style>
-    #splash-screen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #0A84FF 0%, #5E5CE6 100%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        transition: opacity 0.5s ease;
-    }
-    #splash-screen.hidden {
-        opacity: 0;
-        pointer-events: none;
-    }
-    .splash-icon {
-        font-size: 80px;
-        margin-bottom: 20px;
-    }
-    .splash-text {
-        color: white;
-        font-size: 32px;
-        font-weight: 700;
-        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-    }
-</style>
-
-    
 </head>
 
 <body class="safe-bottom safe-x theme-transition">
-    
-    <div id="splash-screen">
-    <div class="splash-icon">🎂</div>
-    <div class="splash-text">Birthday</div>
-</div>
-
-<script>
-    // Ocultar splash cuando la app esté lista
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            document.getElementById('splash-screen').classList.add('hidden');
-        }, 1500); // Muestra por 1.5 segundos
-    });
-</script>
-
-    
-    
 
     <!-- Pull to Refresh Indicator -->
     <div class="ptr-indicator" id="ptrIndicator">
@@ -147,7 +98,7 @@
     </header>
 
     <!-- Main Content -->
-    <main class="pt-40 pb-28 relative" id="mainContent">
+    <main class="pt-40 pb-28 relative overflow-y-auto h-screen" id="mainContent" style="height: 100vh; overflow-y: auto; -webkit-overflow-scrolling: touch;">
         
         <!-- Today Card -->
         <div id="todaySection" class="hidden mb-6">
@@ -177,16 +128,18 @@
         </div>
 
         <!-- Empty State -->
-        <div id="emptyState" class="hidden text-center py-16">
-            <div class="w-28 h-28 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center text-5xl shadow-sm theme-transition">
-                🎂
-            </div>
+        <div id="emptyState" class="hidden text-center py-16 px-6">
+            <div class="w-28 h-28 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center text-5xl shadow-sm theme-transition">🎂</div>
             <h2 class="text-title-2 mb-2" style="color: var(--text-primary);">Sin cumpleaños</h2>
-            <p class="text-footnote mb-8 max-w-xs mx-auto">Añade tus contactos para recordar sus fechas especiales</p>
-            <button onclick="importContacts()" class="btn-ios">
-                Importar Contactos
+            <p class="text-footnote mb-8 max-w-xs mx-auto" style="color: var(--text-secondary);">
+                Añade tus contactos para recordar sus fechas especiales
+            </p>
+            <button onclick="showAddModal()" class="btn-ios px-8 py-4 rounded-2xl font-semibold text-body inline-flex items-center gap-2">
+                <span>+</span>
+                Añadir Contacto
             </button>
         </div>
+        
     </main>
 
     <!-- FAB -->
@@ -220,10 +173,10 @@
                         <input type="text" id="personName" class="input-ios theme-transition" placeholder="Nombre completo" oninput="updateAvatarPreview()">
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-4 items-start">
                         <div>
                             <label class="text-caption mb-2 block">Fecha</label>
-                            <input type="date" id="birthDate" class="input-ios theme-transition">
+                            <input type="date" id="birthDate" class="input-ios theme-transition w-full">
                         </div>
                         <div>
                             <label class="text-caption mb-2 block">Tipo</label>
@@ -326,9 +279,7 @@
     <!-- Toast -->
     <div id="toastContainer" class="fixed top-24 left-1/2 transform -translate-x-1/2 z-50"></div>
 
-<!-- ===================
-     Scripts
-     =================== -->
+<!-- ===== Scripts ===== -->
 <script src="app.js"></script> 
 
 <script>
