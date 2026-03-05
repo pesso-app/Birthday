@@ -103,8 +103,6 @@ MIT License - Libre para uso personal y comercial.
 ---
 
 <p align="center">
-  Hecho con ❤️ para no olvidar fechas importantes
+  Hecho con ❤️ by Pesso para no olvidar fechas importantes
 </p>
-
-## 📁 Estructura
 
