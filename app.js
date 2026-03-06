@@ -714,6 +714,7 @@ function renderBirthdays(searchTerm = '') {
     const list = document.getElementById('birthdaysList');
     const empty = document.getElementById('emptyState');
     const todaySection = document.getElementById('todaySection');
+    const mainContent = document.getElementById('mainContent');
     
     if (!list) return;
     
@@ -741,13 +742,17 @@ function renderBirthdays(searchTerm = '') {
 
     const toRender = upcoming;
     
+    // Control de scroll condicional
     if (toRender.length === 0 && todayBirthdays.length === 0) {
         if (empty) empty.classList.remove('hidden');
+        if (mainContent) mainContent.classList.add('no-scroll');
         return;
     }
     
     if (empty) empty.classList.add('hidden');
+    if (mainContent) mainContent.classList.remove('no-scroll');
 
+    // Renderizar items...
     toRender.forEach(p => {
         const birthDate = new Date(p.birthDate);
         const days = getDaysUntil(birthDate);
@@ -785,6 +790,50 @@ function renderBirthdays(searchTerm = '') {
         list.appendChild(item);
     });
 }
+
+
+// ==================== COMPARTIR POR WHATSAPP ====================
+function shareViaWhatsApp(personId) {
+    const person = people.find(p => p.id === personId);
+    if (!person) return;
+    
+    const birthDate = new Date(person.birthDate);
+    const days = getDaysUntil(birthDate);
+    const age = calculateAge(birthDate);
+    const nextAge = age + 1;
+    const zodiac = getZodiac(birthDate);
+    
+    let message = '';
+    
+    if (days === 0) {
+        message = `🎉 ¡Hoy es el cumpleaños de ${person.name}! Cumple ${nextAge} años. ¡No olvides felicitarle! 🎂`;
+    } else if (days === 1) {
+        message = `📅 Mañana cumple ${person.name} ${nextAge} años. ¡Prepárate para felicitarle! 🎉`;
+    } else {
+        message = `📅 Cumpleaños de ${person.name} en ${days} días. Cumplirá ${nextAge} años. ♑ ${zodiac.name}`;
+    }
+    
+    if (person.notes) {
+        message += `\n\n📝 Notas: ${person.notes}`;
+    }
+    
+    // Codificar mensaje para URL
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+    
+    // Abrir WhatsApp
+    window.open(whatsappUrl, '_blank');
+    
+    showToast('Abriendo WhatsApp...');
+}
+
+// Función para compartir desde el modal de edición
+function shareCurrentPerson() {
+    if (editingId) {
+        shareViaWhatsApp(editingId);
+    }
+}
+
 
 function createConfetti() {
     const colors = ['#0A84FF', '#FF375F', '#BF5AF2', '#30D158', '#FF9F0A'];
@@ -869,6 +918,7 @@ function filterBirthdays(filter) {
         });
 }
 
+// Modificar showAddModal para ocultar el botón de compartir
 function showAddModal() {
     editingId = null;
     const modalTitle = document.getElementById('modalTitle');
@@ -879,6 +929,8 @@ function showAddModal() {
     const deleteBtn = document.getElementById('deleteBtn');
     const avatarPreview = document.getElementById('avatarPreview');
     const personModal = document.getElementById('personModal');
+    const shareBtnContainer = document.getElementById('shareBtnContainer');
+    const calendarBtnContainer = document.getElementById('calendarBtnContainer');
     
     if (modalTitle) modalTitle.textContent = 'Nuevo';
     if (personName) personName.value = '';
@@ -888,6 +940,10 @@ function showAddModal() {
     if (deleteBtn) deleteBtn.classList.add('hidden');
     if (avatarPreview) avatarPreview.textContent = '?';
     if (personModal) personModal.classList.remove('hidden');
+    
+    // Ocultar botones en modo nuevo
+    if (shareBtnContainer) shareBtnContainer.classList.add('hidden');
+    if (calendarBtnContainer) calendarBtnContainer.classList.add('hidden');
 }
 
 function editPerson(id) {
@@ -903,6 +959,8 @@ function editPerson(id) {
     const deleteBtn = document.getElementById('deleteBtn');
     const avatarPreview = document.getElementById('avatarPreview');
     const personModal = document.getElementById('personModal');
+    const shareBtnContainer = document.getElementById('shareBtnContainer');
+    const calendarBtnContainer = document.getElementById('calendarBtnContainer');
     
     if (modalTitle) modalTitle.textContent = 'Editar';
     if (personName) personName.value = p.name;
@@ -913,8 +971,9 @@ function editPerson(id) {
     if (avatarPreview) avatarPreview.textContent = p.name.charAt(0);
     if (personModal) personModal.classList.remove('hidden');
     
-    // Agregar botones de acción rápida
-    setTimeout(enhanceEditModal, 100);
+    // Mostrar botones de compartir y calendario
+    if (shareBtnContainer) shareBtnContainer.classList.remove('hidden');
+    if (calendarBtnContainer) calendarBtnContainer.classList.remove('hidden');
 }
 
 function closeModal() {
@@ -1436,4 +1495,124 @@ function importSelected() {
     // Implementación básica
     showToast('Importación completada');
     closeImportModal();
+}
+
+
+// ==================== INTEGRACIÓN CON CALENDARIO ====================
+
+// Agregar cumpleaños al calendario nativo
+function addToCalendar(personId) {
+    const person = people.find(p => p.id === personId);
+    if (!person) return;
+    
+    const birthDate = new Date(person.birthDate);
+    const nextBirthday = getNextBirthdayDate(birthDate);
+    const age = calculateAge(birthDate) + 1;
+    
+    // Crear evento en formato ICS (iCalendar)
+    const event = createICSEvent(person, nextBirthday, age);
+    
+    // Descargar archivo .ics
+    downloadICSFile(event, `cumpleanos-${person.name.replace(/\s+/g, '-').toLowerCase()}`);
+    
+    showToast('Archivo de calendario descargado');
+}
+
+// Crear evento ICS
+function createICSEvent(person, date, age) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    
+    const startDate = `${year}${month}${day}`;
+    // Fecha de fin (todo el día)
+    const endDate = new Date(date);
+    endDate.setDate(endDate.getDate() + 1);
+    const endYear = endDate.getFullYear();
+    const endMonth = String(endDate.getMonth() + 1).padStart(2, '0');
+    const endDay = String(endDate.getDate()).padStart(2, '0');
+    const endDateStr = `${endYear}${endMonth}${endDay}`;
+    
+    const uid = `${person.id}@birthday-app`;
+    const now = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    
+    const icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Birthday App//ES',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'BEGIN:VEVENT',
+        `UID:${uid}`,
+        `DTSTAMP:${now}`,
+        `DTSTART;VALUE=DATE:${startDate}`,
+        `DTEND;VALUE=DATE:${endDateStr}`,
+        `SUMMARY:🎂 Cumpleaños de ${person.name}`,
+        `DESCRIPTION:Cumple ${age} años\\n${person.notes ? 'Notas: ' + person.notes : ''}`,
+        'RRULE:FREQ=YEARLY',
+        'BEGIN:VALARM',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:Recordatorio de cumpleaños',
+        'TRIGGER:-P1D', // 1 día antes
+        'END:VALARM',
+        'END:VEVENT',
+        'END:VCALENDAR'
+    ].join('\r\n');
+    
+    return icsContent;
+}
+
+// Descargar archivo ICS
+function downloadICSFile(content, filename) {
+    const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// Función para el botón en el modal
+function addCurrentPersonToCalendar() {
+    if (editingId) {
+        addToCalendar(editingId);
+    }
+}
+
+// Compartir evento de calendario (para apps que soportan archivos)
+async function shareCalendarEvent(personId) {
+    const person = people.find(p => p.id === personId);
+    if (!person) return;
+    
+    const birthDate = new Date(person.birthDate);
+    const nextBirthday = getNextBirthdayDate(birthDate);
+    const age = calculateAge(birthDate) + 1;
+    
+    const icsContent = createICSEvent(person, nextBirthday, age);
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const file = new File([blob], `cumpleanos-${person.name}.ics`, { type: 'text/calendar' });
+    
+    // Usar Web Share API si está disponible
+    if (navigator.share && navigator.canShare) {
+        try {
+            await navigator.share({
+                title: `Cumpleaños de ${person.name}`,
+                text: `Cumple ${age} años el ${nextBirthday.toLocaleDateString('es-ES')}`,
+                files: [file]
+            });
+            showToast('Compartido exitosamente');
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                console.error('Error compartiendo:', error);
+                // Fallback a descarga
+                downloadICSFile(icsContent, `cumpleanos-${person.name.replace(/\s+/g, '-').toLowerCase()}`);
+            }
+        }
+    } else {
+        // Fallback: descargar archivo
+        downloadICSFile(icsContent, `cumpleanos-${person.name.replace(/\s+/g, '-').toLowerCase()}`);
+    }
 }
