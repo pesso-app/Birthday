@@ -43,6 +43,8 @@ const defaultSettings = {
     }
 };
 
+
+
 // ==================== INDEXEDDB MEJORADO ====================
 async function initDB() {
     return new Promise((resolve, reject) => {
@@ -67,6 +69,7 @@ async function initDB() {
         };
     });
 }
+
 
 // CRUD operations
 async function savePersonDB(person) {
@@ -119,6 +122,7 @@ async function getSettingDB(key, defaultValue = null) {
         request.onerror = () => reject(request.error);
     });
 }
+
 
 // ==================== ZODIAC & HELPERS ====================
 const zodiacSigns = [
@@ -173,6 +177,8 @@ function getNextBirthdayDate(birthDate) {
     
     return nextBirthday;
 }
+
+
 
 // ==================== INICIALIZACIÓN CORREGIDA ====================
 window.onload = async () => {
@@ -300,6 +306,7 @@ async function getSettingsFixed() {
     return { ...defaultSettings, ...settings };
 }
 
+
 // ==================== NOTIFICACIONES CORREGIDAS ====================
 async function setupPushNotificationsFixed() {
     if (!('Notification' in window)) {
@@ -362,6 +369,7 @@ async function saveSettingsFixed(settings) {
     await saveSettingDB('app_settings', settings);
     localStorage.setItem(APP_CONFIG.settingsKey, JSON.stringify(settings));
 }
+
 
 // ==================== RECORDATORIOS INTELIGENTES ====================
 class SmartReminderSystem {
@@ -479,6 +487,7 @@ const smartReminders = new SmartReminderSystem();
 async function initSmartReminders() {
     await smartReminders.init();
 }
+
 
 // ==================== TIMELINE DE CUMPLEAÑOS ====================
 function showTimeline() {
@@ -624,6 +633,7 @@ function closeTimeline() {
     }
 }
 
+
 // ==================== HEADER MEJORADO ====================
 function setupEnhancedHeader() {
     const headerButtons = document.querySelector('.glass-header .flex.items-center.justify-between .flex.items-center.gap-2');
@@ -656,6 +666,7 @@ function setupEnhancedHeader() {
         `;
     }
 }
+
 
 // ==================== FUNCIONES EXISTENTES (mantenidas) ====================
 async function loadData() {
@@ -834,7 +845,6 @@ function shareCurrentPerson() {
     }
 }
 
-
 function createConfetti() {
     const colors = ['#0A84FF', '#FF375F', '#BF5AF2', '#30D158', '#FF9F0A'];
     for (let i = 0; i < 40; i++) {
@@ -917,6 +927,7 @@ function filterBirthdays(filter) {
             list.appendChild(item);
         });
 }
+
 
 // Modificar showAddModal para ocultar el botón de compartir
 function showAddModal() {

@@ -41,13 +41,15 @@
             letter-spacing: -0.015em;
         }
 
-        body {
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
             background: var(--bg-primary);
             color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
+        }        
 
         /* Typography */
         .text-display { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; }
@@ -131,20 +133,19 @@
     padding: 3px;
     display: flex;
     gap: 3px;
-    width: 100%; /* Asegurar ancho completo */
-    box-sizing: border-box;
+    width: 100%;
 }
 
 .segment-btn {
     flex: 1;
-    padding: 8px 8px; /* Reducido para que quepan bien */
+    padding: 8px 4px;
     border-radius: 10px;
     font-size: 13px;
     font-weight: 500;
     color: var(--text-secondary);
     transition: all 0.3s;
     text-align: center;
-    white-space: nowrap; /* Evitar que se rompa el texto */
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     border: none;
@@ -221,36 +222,35 @@
         }
         
         /* FAB - a la derecha con + perfectamente centrado */
-        .fab-ios {
-            width: 64px;
-            height: 64px;
-            border-radius: 32px;
-            background: linear-gradient(135deg, var(--ios-blue) 0%, var(--ios-indigo) 100%);
-            color: white;
-            font-size: 28px;
-            font-weight: 300;
-            box-shadow: 0 8px 24px rgba(10, 132, 255, 0.35), 0 4px 12px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-        }
+.fab-ios {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 64px;
+    height: 64px;
+    border-radius: 32px;
+    background: linear-gradient(135deg, var(--ios-blue) 0%, var(--ios-indigo) 100%);
+    color: white;
+    font-size: 40px;
+    font-weight: 300;
+    box-shadow: 0 8px 24px rgba(10, 132, 255, 0.35), 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    border: none;
+    cursor: pointer;
+    z-index: 40;
+}
 
-        /* El + centrado perfectamente */
-        .fab-ios span {
-            font-size: 40px;
-            font-weight: 300;
-            line-height: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-            padding-bottom: 7px; /* Ajuste fino para centrar visualmente */
-            box-sizing: border-box;
-        }
+.fab-ios span {
+    line-height: 1;
+    padding-bottom: 4px;
+}
 
-        .fab-ios:active { transform: scale(0.9) rotate(90deg); }
+.fab-ios:active { 
+    transform: scale(0.9) rotate(90deg); 
+}
 
         /* Sheet */
         .sheet-ios {
@@ -334,26 +334,27 @@
         }
 
         /* Toast */
-        .toast-ios {
-            background: rgba(60, 60, 67, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            color: white;
-            padding: 16px 28px;
-            border-radius: 16px;
-            font-size: 15px;
-            font-weight: 500;
-            text-align: center;
-            animation: toast-in 0.4s cubic-bezier(0.32, 0.72, 0, 1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            margin-bottom: 12px;
-            min-width: 200px;
-            max-width: 80vw;
-        }
-        @keyframes toast-in {
-            from { transform: translateY(20px) scale(0.9); opacity: 0; }
-            to { transform: translateY(0) scale(1); opacity: 1; }
-        }
+.toast-ios {
+    background: rgba(60, 60, 67, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: white;
+    padding: 16px 28px;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+    animation: toast-in 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    margin-bottom: 12px;
+    min-width: 200px;
+    max-width: 80vw;
+}
+
+@keyframes toast-in {
+    from { transform: translateY(20px) scale(0.9); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
 
         /* Safe Areas */
         .safe-top { padding-top: max(12px, env(safe-area-inset-top)); }
@@ -367,8 +368,6 @@
         .theme-transition {
             transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
-
-/* ==================== ESTILOS V3c - SWITCHES CORREGIDOS ==================== */
 
 /* ==================== SWITCH IOS ORIGINAL (para recordatorios individuales) ==================== */
 
@@ -1102,22 +1101,29 @@
 
 
 /* ==================== CORRECCIÓN SCROLL ==================== */
-html, body {
-    height: 100%;
-    overflow: hidden; /* Prevenir scroll en body */
-}
+
 
 #mainContent {
-    height: calc(100vh - 160px); /* Altura total menos header */
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
     position: fixed;
-    top: 160px;
+    top: 140px; /* Altura del header */
     left: 0;
     right: 0;
     bottom: 0;
-    padding-top: 0 !important;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: 20px;
     padding-bottom: 100px; /* Espacio para FAB */
+
+    /* Fix para PWA instalada */
+    height: calc(100vh - 140px);
+    height: calc(100dvh - 140px); /* Dynamic viewport height */
+
+    /* Ajuste para safe areas */
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+    padding-bottom: max(100px, env(safe-area-inset-bottom) + 80px);
 }
 
 /* Cuando NO hay cumpleaños - desactivar scroll */
